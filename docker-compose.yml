@@ -1,0 +1,57 @@
+services:
+  mysql:
+    container_name: mydb-container
+    image: mysql:latest
+    volumes:
+      - ./mysql/demo/etc/mysql/conf.d:/etc/mysql/conf.d:ro
+      - ./mysql/demo/var/lib/mysql:/var/lib/mysql
+      - ./mysql/demo/var/log/mysql:/var/log/mysql
+    environment:
+      - MYSQL_DATABASE=mydb
+      - MYSQL_ROOT_PASSWORD=rootpass
+      - MYSQL_ROOT_HOST=%
+    command: ['--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']
+    ports:
+      - "3306:3306"
+    restart: always
+   
+  mongodb:
+    container_name: mgdb-container
+    image: mongo:latest
+    ports:
+
+      - 27017:27017
+    volumes:
+      - ./mongodb:/data/mgdb
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=rootpass
+      - MONGO_INITDB_DATABASE=mgdb
+    restart: always
+
+  redis:
+    container_name: redis-container
+    image: redis:latest
+    ports:
+      - 6379:6379
+    command: redis-server --requirepass rootpass
+    volumes:
+      - ./redis/data:/data
+      - ./redis/conf/redis.conf:/usr/local/conf/redis.conf
+    labels:
+      - "name=redis"
+      - "mode=standalone"
+    restart: always
+
+  postgres:
+    container_name: pgdb-container
+    image: postgres:latest
+    volumes:
+      - ./postgres:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: rootpass
+      POSTGRES_DB: pgdb
+    restart: always
